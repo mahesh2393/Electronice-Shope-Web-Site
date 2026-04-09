@@ -1,0 +1,794 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+    /* ===== CHECKOUT STYLES ===== */
+    .checkout-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #f8f9fa;
+        min-height: 100vh;
+    }
+    
+    /* Cards */
+    .shipping-card, .order-summary-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        overflow: hidden;
+        margin-bottom: 25px;
+    }
+    
+    .card-header-custom {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 15px 20px;
+    }
+    
+    .card-header-custom h4 {
+        margin: 0;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .card-body-custom {
+        padding: 25px;
+    }
+    
+    /* Form Styles */
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #555;
+        font-size: 0.9rem;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+    }
+    
+    /* Payment Options - Updated with 5 methods */
+    .payment-section {
+        margin-top: 20px;
+    }
+    
+    .payment-options {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .payment-option {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        gap: 15px;
+        background: white;
+    }
+    
+    .payment-option:hover {
+        border-color: #667eea;
+        transform: translateX(5px);
+        background: #f8f9fa;
+    }
+    
+    .payment-option.selected {
+        border-color: #28a745;
+        background: #f0fff4;
+        box-shadow: 0 5px 15px rgba(40,167,69,0.1);
+    }
+    
+    .payment-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+    
+    /* Payment Icon Colors */
+    .payment-icon.cod { background: #e8f5e9; color: #2e7d32; }
+    .payment-icon.card { background: #e3f2fd; color: #1565c0; }
+    .payment-icon.upi { background: #fce4ec; color: #c2185b; }
+    .payment-icon.netbanking { background: #fff3e0; color: #f57c00; }
+    .payment-icon.wallet { background: #f3e5f5; color: #7b1fa2; }
+    
+    .payment-details {
+        flex: 1;
+    }
+    
+    .payment-title {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 3px;
+        font-size: 0.95rem;
+    }
+    
+    .payment-description {
+        font-size: 0.75rem;
+        color: #888;
+    }
+    
+    /* Order Summary */
+    .order-summary-card {
+        position: sticky;
+        top: 20px;
+    }
+    
+    .cart-item-summary {
+        display: flex;
+        gap: 12px;
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .cart-item-image {
+        width: 60px;
+        height: 60px;
+        flex-shrink: 0;
+        background: #f8f9fa;
+        border-radius: 10px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #e0e0e0;
+    }
+    
+    .cart-item-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .cart-item-details {
+        flex: 1;
+    }
+    
+    .cart-item-name {
+        font-weight: 600;
+        color: #333;
+        font-size: 0.85rem;
+        margin-bottom: 5px;
+    }
+    
+    .cart-item-subtotal {
+        font-weight: 700;
+        color: #28a745;
+        font-size: 0.85rem;
+    }
+    
+    .order-total-amount {
+        font-weight: 700;
+        color: #28a745;
+        font-size: 1.1rem;
+    }
+    
+    .place-order-btn {
+        width: 100%;
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        border: none;
+        padding: 15px;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 20px;
+    }
+    
+    .place-order-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(40,167,69,0.3);
+    }
+    
+    /* ===== UPI QR MODAL ===== */
+    .upi-qr-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(5px);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .upi-qr-modal.show {
+        display: flex;
+        animation: modalFadeIn 0.3s ease;
+    }
+    
+    .upi-qr-modal-content {
+        background: white;
+        border-radius: 24px;
+        max-width: 500px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        animation: modalSlideUp 0.4s ease;
+    }
+    
+    .modal-header {
+        background: linear-gradient(135deg, #25d366, #128C7E);
+        color: white;
+        padding: 20px;
+        border-radius: 24px 24px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .modal-header h3 {
+        margin: 0;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .modal-close {
+        background: rgba(255,255,255,0.2);
+        border: none;
+        color: white;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 1.2rem;
+        transition: all 0.3s;
+    }
+    
+    .modal-body {
+        padding: 25px;
+    }
+    
+    /* Amount Display */
+    .amount-display {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 20px;
+        border-radius: 16px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    
+    .amount-display .label {
+        font-size: 0.85rem;
+        opacity: 0.9;
+        margin-bottom: 5px;
+    }
+    
+    .amount-display .value {
+        font-size: 2rem;
+        font-weight: 700;
+    }
+    
+    /* QR Code */
+    .qr-container {
+        text-align: center;
+        margin: 20px 0;
+    }
+    
+    .qr-code {
+        width: 220px;
+        height: 220px;
+        margin: 0 auto;
+        background: white;
+        padding: 10px;
+        border: 3px solid #25d366;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    
+    /* UPI ID */
+    .upi-id-container {
+        background: #f0f0f0;
+        padding: 12px 15px;
+        border-radius: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 15px 0;
+    }
+    
+    .upi-id {
+        font-family: monospace;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #128C7E;
+    }
+    
+    .copy-btn {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        color: white;
+        padding: 6px 15px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 0.8rem;
+    }
+    
+    /* Instructions */
+    .payment-instructions {
+        background: #e8f5e9;
+        padding: 15px;
+        border-radius: 12px;
+        margin: 15px 0;
+    }
+    
+    .payment-instructions h4 {
+        color: #128C7E;
+        margin-bottom: 10px;
+        font-size: 0.9rem;
+    }
+    
+    .payment-instructions ol {
+        padding-left: 20px;
+        margin: 0;
+    }
+    
+    .payment-instructions li {
+        margin-bottom: 8px;
+        font-size: 0.8rem;
+        color: #555;
+    }
+    
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 12px;
+        margin-top: 20px;
+    }
+    
+    .btn-paid, .btn-cancel {
+        flex: 1;
+        padding: 12px;
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: none;
+    }
+    
+    .btn-paid {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+    }
+    
+    .btn-paid:hover {
+        transform: translateY(-2px);
+    }
+    
+    .btn-cancel {
+        background: #f0f0f0;
+        color: #666;
+    }
+    
+    /* Animations */
+    @keyframes modalFadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    @keyframes modalSlideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .qr-code {
+            width: 180px;
+            height: 180px;
+        }
+        .amount-display .value {
+            font-size: 1.5rem;
+        }
+        .action-buttons {
+            flex-direction: column;
+        }
+        .order-summary-card {
+            position: static;
+            margin-top: 20px;
+        }
+        .payment-option {
+            flex-wrap: wrap;
+        }
+        .payment-icon {
+            width: 45px;
+            height: 45px;
+            font-size: 1.3rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="checkout-container">
+    <div class="row">
+        <!-- Left Column -->
+        <div class="col-lg-7">
+            <div class="shipping-card">
+                <div class="card-header-custom">
+                    <h4><i class="fas fa-truck"></i> Shipping Information</h4>
+                </div>
+                <div class="card-body-custom">
+                    <form method="POST" action="{% url 'checkout' %}" id="checkoutForm">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Full Name <span class="required">*</span></label>
+                                    <input type="text" name="name" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Email <span class="required">*</span></label>
+                                    <input type="email" name="email" class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Phone <span class="required">*</span></label>
+                                    <input type="tel" name="phone" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Pincode <span class="required">*</span></label>
+                                    <input type="text" name="pincode" class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Address <span class="required">*</span></label>
+                            <textarea name="address" class="form-control" rows="3" required></textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>City <span class="required">*</span></label>
+                                    <input type="text" name="city" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>State <span class="required">*</span></label>
+                                    <input type="text" name="state" class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- ✅ Payment Methods Section - 5 Methods -->
+                        <div class="payment-section">
+                            <div class="card-header-custom">
+                                <h4><i class="fas fa-credit-card"></i> Select Payment Method</h4>
+                            </div>
+                            <div class="payment-options">
+                                
+                                <!-- 1. Cash on Delivery -->
+                                <label class="payment-option" data-method="cod">
+                                    <input type="radio" name="payment_method" value="cod">
+                                    <span class="payment-icon cod"><i class="fas fa-money-bill-wave"></i></span>
+                                    <span class="payment-details">
+                                        <span class="payment-title">Cash on Delivery</span>
+                                        <span class="payment-description">Pay when you receive your order</span>
+                                    </span>
+                                </label>
+                                
+                                <!-- 2. Credit/Debit Card -->
+                                <label class="payment-option" data-method="card">
+                                    <input type="radio" name="payment_method" value="card">
+                                    <span class="payment-icon card"><i class="fas fa-credit-card"></i></span>
+                                    <span class="payment-details">
+                                        <span class="payment-title">Credit / Debit Card</span>
+                                        <span class="payment-description">Visa, MasterCard, RuPay, Amex</span>
+                                    </span>
+                                </label>
+                                
+                                <!-- 3. UPI (QR Code) -->
+                                <label class="payment-option" data-method="upi">
+                                    <input type="radio" name="payment_method" value="upi" checked>
+                                    <span class="payment-icon upi"><i class="fab fa-google-pay"></i></span>
+                                    <span class="payment-details">
+                                        <span class="payment-title">UPI (Google Pay, PhonePe, Paytm)</span>
+                                        <span class="payment-description">Scan QR code to pay instantly</span>
+                                    </span>
+                                </label>
+                                
+                                <!-- 4. Net Banking -->
+                                <label class="payment-option" data-method="netbanking">
+                                    <input type="radio" name="payment_method" value="netbanking">
+                                    <span class="payment-icon netbanking"><i class="fas fa-university"></i></span>
+                                    <span class="payment-details">
+                                        <span class="payment-title">Net Banking</span>
+                                        <span class="payment-description">All major banks available</span>
+                                    </span>
+                                </label>
+                                
+                                <!-- 5. Mobile Wallet -->
+                                <label class="payment-option" data-method="wallet">
+                                    <input type="radio" name="payment_method" value="wallet">
+                                    <span class="payment-icon wallet"><i class="fas fa-wallet"></i></span>
+                                    <span class="payment-details">
+                                        <span class="payment-title">Mobile Wallet</span>
+                                        <span class="payment-description">Paytm, Amazon Pay, Mobikwik</span>
+                                    </span>
+                                </label>
+                                
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="place-order-btn" id="placeOrderBtn">
+                            <i class="fas fa-lock"></i> Proceed to Pay
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Column - Order Summary -->
+        <div class="col-lg-5">
+            <div class="order-summary-card">
+                <div class="card-header-custom">
+                    <h4><i class="fas fa-shopping-bag"></i> Order Summary</h4>
+                </div>
+                <div class="card-body-custom">
+                    {% for item in cart_items %}
+                    <div class="cart-item-summary">
+                        <div class="cart-item-image">
+                            {% if item.product.image %}
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                            {% else %}
+                            <div class="cart-item-image-placeholder"><i class="fas fa-box"></i></div>
+                            {% endif %}
+                        </div>
+                        <div class="cart-item-details">
+                            <div class="cart-item-name">{{ item.product.name }}</div>
+                            <div class="cart-item-meta">
+                                <span class="cart-item-quantity">Qty: {{ item.quantity }}</span>
+                                <span class="cart-item-price">₹{{ item.product.price|floatformat:2 }}</span>
+                            </div>
+                        </div>
+                        <div class="cart-item-subtotal">₹{{ item.subtotal|floatformat:2 }}</div>
+                    </div>
+                    {% endfor %}
+                    
+                    <div class="order-total-section mt-3 pt-3 border-top">
+                        <div class="d-flex justify-content-between">
+                            <strong>Total Amount</strong>
+                            <strong class="order-total-amount">₹{{ total|floatformat:2 }}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- UPI QR Modal (Only for UPI payments) -->
+<div id="upiQrModal" class="upi-qr-modal">
+    <div class="upi-qr-modal-content">
+        <div class="modal-header">
+            <h3><i class="fab fa-google-pay"></i> Scan & Pay with UPI</h3>
+            <button class="modal-close" onclick="closeUpiModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="amount-display">
+                <div class="label">Amount to Pay</div>
+                <div class="value" id="dynamicAmount">₹0.00</div>
+            </div>
+            
+            <div class="qr-container">
+                <div id="qrCode" class="qr-code"></div>
+            </div>
+            
+            <div class="upi-id-container">
+                <span class="upi-id" id="upiId">7014172393@axl</span>
+                <button class="copy-btn" onclick="copyUpiId()"><i class="fas fa-copy"></i> Copy UPI ID</button>
+            </div>
+            
+            <div class="payment-instructions">
+                <h4><i class="fas fa-info-circle"></i> How to Pay:</h4>
+                <ol>
+                    <li>Open any UPI app (Google Pay, PhonePe, Paytm, BHIM)</li>
+                    <li>Scan the QR code above</li>
+                    <li>Amount <strong id="instructionAmount">₹0.00</strong> will auto-populate</li>
+                    <li>Enter your UPI PIN and confirm payment</li>
+                    <li>Click "I Have Paid" after successful payment</li>
+                </ol>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn-paid" onclick="confirmUpiPayment()"><i class="fas fa-check-circle"></i> I Have Paid</button>
+                <button class="btn-cancel" onclick="closeUpiModal()"><i class="fas fa-times"></i> Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs2-fix/qrcode.min.js"></script>
+<script>
+    // Get order total from Django template
+    const orderTotal = {{ total|floatformat:2 }};
+    let qrcode = null;
+    
+    // Generate UPI payment URL with amount
+    function generateUpiUrl(amount) {
+        const upiId = "7014172393@axl";
+        const name = "MGS Electronics";
+        const note = "Order Payment";
+        return `upi://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
+    }
+    
+    // Generate QR Code with dynamic amount
+    function generateQRCode(amount) {
+        const upiUrl = generateUpiUrl(amount);
+        const qrContainer = document.getElementById('qrCode');
+        qrContainer.innerHTML = '';
+        
+        qrcode = new QRCode(qrContainer, {
+            text: upiUrl,
+            width: 200,
+            height: 200,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+    }
+    
+    // Update modal with amount
+    function updateUpiModal(total) {
+        document.getElementById('dynamicAmount').innerHTML = `₹${total}`;
+        document.getElementById('instructionAmount').innerHTML = `₹${total}`;
+        generateQRCode(total);
+    }
+    
+    // Open UPI Modal
+    function openUpiModal() {
+        if (orderTotal <= 0) {
+            alert('Invalid order total');
+            return false;
+        }
+        updateUpiModal(orderTotal);
+        document.getElementById('upiQrModal').classList.add('show');
+        document.body.style.overflow = 'hidden';
+        return false;
+    }
+    
+    // Close UPI Modal
+    function closeUpiModal() {
+        document.getElementById('upiQrModal').classList.remove('show');
+        document.body.style.overflow = '';
+    }
+    
+    // Copy UPI ID
+    function copyUpiId() {
+        const upiId = document.getElementById('upiId').innerText;
+        navigator.clipboard.writeText(upiId).then(() => {
+            alert('UPI ID copied: ' + upiId);
+        });
+    }
+    
+    // Confirm payment and submit order
+    function confirmUpiPayment() {
+        if (confirm('Have you completed the payment? Click OK to proceed with your order.')) {
+            closeUpiModal();
+            
+            const form = document.getElementById('checkoutForm');
+            const formData = new FormData(form);
+            formData.append('payment_confirmed', 'true');
+            
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = data.redirect_url;
+                } else {
+                    alert(data.message || 'Payment verification failed');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error processing order');
+            });
+        }
+    }
+    
+    // Get CSRF token
+    function getCookie(name) {
+        let value = null;
+        if (document.cookie) {
+            document.cookie.split(';').forEach(cookie => {
+                const trimmed = cookie.trim();
+                if (trimmed.startsWith(name + '=')) {
+                    value = decodeURIComponent(trimmed.substring(name.length + 1));
+                }
+            });
+        }
+        return value;
+    }
+    
+    // Handle form submission
+    document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+        const paymentMethod = document.querySelector('input[name="payment_method"]:checked');
+        if (!paymentMethod) {
+            e.preventDefault();
+            alert('Please select a payment method');
+            return;
+        }
+        if (paymentMethod.value === 'upi') {
+            e.preventDefault();
+            openUpiModal();
+        }
+        // For other payment methods, form will submit normally
+    });
+    
+    // Payment option selection highlight
+    document.querySelectorAll('.payment-option').forEach(option => {
+        option.addEventListener('click', function() {
+            document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('selected'));
+            this.classList.add('selected');
+            this.querySelector('input[type="radio"]').checked = true;
+        });
+    });
+    
+    // Set default selected (UPI)
+    document.querySelector('input[value="upi"]').closest('.payment-option').classList.add('selected');
+</script>
+{% endblock %}

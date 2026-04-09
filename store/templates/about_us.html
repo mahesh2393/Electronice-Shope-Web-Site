@@ -1,0 +1,573 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+    /* ===== ABOUT US PAGE STYLES ===== */
+    .about-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+    
+    /* Hero Section */
+    .about-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        text-align: center;
+        padding: 80px 20px;
+        border-radius: 30px;
+        margin-bottom: 60px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .about-hero::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: rotate 20s linear infinite;
+    }
+    
+    @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    
+    .about-hero h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .about-hero p {
+        font-size: 1.2rem;
+        max-width: 700px;
+        margin: 0 auto;
+        opacity: 0.9;
+        position: relative;
+        z-index: 1;
+    }
+    
+    /* Mission & Vision Section */
+    .mission-vision {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin-bottom: 60px;
+    }
+    
+    .mission-card, .vision-card {
+        background: white;
+        border-radius: 20px;
+        padding: 40px 30px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+    }
+    
+    .mission-card:hover, .vision-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+    }
+    
+    .mission-card i, .vision-card i {
+        font-size: 3rem;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 20px;
+    }
+    
+    .mission-card h3, .vision-card h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: #333;
+    }
+    
+    .mission-card p, .vision-card p {
+        color: #666;
+        line-height: 1.6;
+    }
+    
+    /* Story Section */
+    .story-section {
+        background: #f8f9fa;
+        border-radius: 30px;
+        padding: 60px;
+        margin-bottom: 60px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 50px;
+        align-items: center;
+    }
+    
+    .story-content h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 20px;
+        position: relative;
+        padding-bottom: 15px;
+    }
+    
+    .story-content h2::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 2px;
+    }
+    
+    .story-content p {
+        color: #666;
+        line-height: 1.8;
+        margin-bottom: 20px;
+    }
+    
+    .story-image {
+        text-align: center;
+    }
+    
+    .story-image img {
+        max-width: 100%;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+    
+    /* Values Section */
+    .values-section {
+        text-align: center;
+        margin-bottom: 60px;
+    }
+    
+    .values-section h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 40px;
+        position: relative;
+        display: inline-block;
+        padding-bottom: 15px;
+    }
+    
+    .values-section h2::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 2px;
+    }
+    
+    .values-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+    }
+    
+    .value-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        text-align: center;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    }
+    
+    .value-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+    
+    .value-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #667eea20, #764ba220);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+    }
+    
+    .value-icon i {
+        font-size: 2rem;
+        color: #667eea;
+    }
+    
+    .value-card h4 {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #333;
+    }
+    
+    .value-card p {
+        color: #666;
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+    
+    /* Team Section */
+    .team-section {
+        text-align: center;
+        margin-bottom: 60px;
+    }
+    
+    .team-section h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 40px;
+        position: relative;
+        display: inline-block;
+        padding-bottom: 15px;
+    }
+    
+    .team-section h2::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 2px;
+    }
+    
+    .team-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 30px;
+    }
+    
+    .team-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+    }
+    
+    .team-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+    
+    .team-image {
+        width: 100%;
+        height: 250px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .team-image i {
+        font-size: 4rem;
+        color: white;
+    }
+    
+    .team-info {
+        padding: 20px;
+        text-align: center;
+    }
+    
+    .team-info h4 {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: #333;
+    }
+    
+    .team-info p {
+        color: #667eea;
+        font-weight: 500;
+        margin-bottom: 10px;
+    }
+    
+    .team-info .bio {
+        font-size: 0.85rem;
+        color: #666;
+        line-height: 1.5;
+    }
+    
+    /* Stats Section */
+    .stats-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 30px;
+        padding: 60px;
+        margin-bottom: 60px;
+        color: white;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 30px;
+        text-align: center;
+    }
+    
+    .stat-item h3 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+    
+    .stat-item p {
+        font-size: 1rem;
+        opacity: 0.9;
+    }
+    
+    /* Contact CTA */
+    .contact-cta {
+        background: white;
+        border-radius: 30px;
+        padding: 50px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+    
+    .contact-cta h2 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 15px;
+    }
+    
+    .contact-cta p {
+        color: #666;
+        margin-bottom: 25px;
+    }
+    
+    .cta-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .btn-contact {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 12px 30px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .btn-contact:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(102,126,234,0.4);
+        color: white;
+    }
+    
+    .btn-shop {
+        background: #f0f0f0;
+        color: #333;
+        padding: 12px 30px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .btn-shop:hover {
+        background: #e0e0e0;
+        transform: translateY(-2px);
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .about-hero h1 {
+            font-size: 2rem;
+        }
+        
+        .story-section {
+            grid-template-columns: 1fr;
+            padding: 30px;
+        }
+        
+        .stats-section {
+            padding: 40px 20px;
+        }
+        
+        .contact-cta {
+            padding: 30px 20px;
+        }
+        
+        .stat-item h3 {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="about-container">
+    <!-- Hero Section -->
+    <div class="about-hero">
+        <h1>About MGS Electronics</h1>
+        <p>Your trusted partner for premium electronics and home appliances since 2007</p>
+    </div>
+    
+    <!-- Mission & Vision -->
+    <div class="mission-vision">
+        <div class="mission-card">
+            <i class="fas fa-bullseye"></i>
+            <h3>Our Mission</h3>
+            <p>To provide high-quality electronics at affordable prices while ensuring exceptional customer service and satisfaction.</p>
+        </div>
+        <div class="vision-card">
+            <i class="fas fa-eye"></i>
+            <h3>Our Vision</h3>
+            <p>To become India's most trusted electronics retailer, known for quality products and outstanding customer experience.</p>
+        </div>
+    </div>
+    
+    <!-- Story Section -->
+    <div class="story-section">
+        <div class="story-content">
+            <h2>Our Story</h2>
+            <p>MADHURAM GRAH SANGRAH (MGS Electronics) was founded in 2007 with a simple vision - to make premium electronics accessible to every Indian household. What started as a small local store in Chomu has now grown into a trusted name in the electronics retail industry.</p>
+            <p>We believe that technology should enhance lives, not complicate them. That's why we carefully curate our product collection, ensuring only the best quality products reach our customers. From LED TVs to home appliances, every product in our store is selected with your needs in mind.</p>
+            <p>Today, MGS Electronics serves thousands of satisfied customers across India, offering a seamless shopping experience both online and offline.</p>
+        </div>
+        <div class="story-image">
+            <img src="https://images.pexels.com/photos/2582937/pexels-photo-2582937.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Our Store">
+        </div>
+    </div>
+    
+    <!-- Our Values -->
+    <div class="values-section">
+        <h2>Our Core Values</h2>
+        <div class="values-grid">
+            <div class="value-card">
+                <div class="value-icon">
+                    <i class="fas fa-medal"></i>
+                </div>
+                <h4>Quality First</h4>
+                <p>We never compromise on product quality. Every item goes through rigorous quality checks.</p>
+            </div>
+            <div class="value-card">
+                <div class="value-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h4>Customer Centric</h4>
+                <p>Your satisfaction is our top priority. We go the extra mile to ensure you're happy.</p>
+            </div>
+            <div class="value-card">
+                <div class="value-icon">
+                    <i class="fas fa-handshake"></i>
+                </div>
+                <h4>Trust & Integrity</h4>
+                <p>We believe in honest business practices and building long-term relationships.</p>
+            </div>
+            <div class="value-card">
+                <div class="value-icon">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <h4>Innovation</h4>
+                <p>We constantly evolve to bring you the latest and most innovative products.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Team Section -->
+    <div class="team-section">
+        <h2>Meet Our Team</h2>
+        <div class="team-grid">
+            <div class="team-card">
+                <div class="team-image">
+                    <img src="https://images.pexels.com/photos/2582937/pexels-photo-2582937.jpeg?auto=compress&cs=tinysrgb&w=100" >
+                </div>
+                <div class="team-info">
+                    <h4>Mahesh Kumar Yadav</h4>
+                    <p>Founder & CEO</p>
+                    <p class="bio">With 18+ years of experience in electronics retail, Mahesh leads the vision of MGS Electronics.</p>
+                </div>
+            </div>
+            <div class="team-card">
+                <div class="team-image">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="team-info">
+                    <h4>Mohan Lal Yadav</h4>
+                    <p>Operations Head</p>
+                    <p class="bio">Ensures smooth operations and timely delivery to all our customers.</p>
+                </div>
+            </div>
+            <div class="team-card">
+                <div class="team-image">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="team-info">
+                    <h4>Sunil Kumar Yadav</h4>
+                    <p>Customer Support Lead</p>
+                    <p class="bio">Dedicated to providing exceptional support and resolving customer queries.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Stats Section -->
+    <div class="stats-section">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <h3>18+</h3>
+                <p>Years of Experience</p>
+            </div>
+            <div class="stat-item">
+                <h3>50,000+</h3>
+                <p>Happy Customers</p>
+            </div>
+            <div class="stat-item">
+                <h3>1000+</h3>
+                <p>Products</p>
+            </div>
+            <div class="stat-item">
+                <h3>100%</h3>
+                <p>Satisfaction Rate</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Contact CTA -->
+    <div class="contact-cta">
+        <h2>Have Questions? We're Here to Help!</h2>
+        <p>Whether you're looking for a specific product or need assistance with your order, our team is ready to assist you.</p>
+        <div class="cta-buttons">
+            <a href="{% url 'home' %}" class="btn-shop">
+                <i class="fas fa-shopping-bag"></i> Shop Now
+            </a>
+            <a href="https://wa.me/917014172393" target="_blank" class="btn-contact">
+                <i class="fab fa-whatsapp"></i> Contact Us on WhatsApp
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

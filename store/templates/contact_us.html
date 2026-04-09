@@ -1,0 +1,864 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+    /* ===== CONTACT US PAGE - FULLY RESPONSIVE ===== */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    .contact-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    /* ===== HERO SECTION ===== */
+    .contact-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        text-align: center;
+        padding: 60px 20px;
+        border-radius: 30px;
+        margin-bottom: 40px;
+    }
+    
+    .contact-hero h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+    
+    .contact-hero p {
+        font-size: 1rem;
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: 1.6;
+    }
+    
+    /* ===== CONTACT GRID ===== */
+    .contact-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+        margin-bottom: 40px;
+    }
+    
+    /* ===== CONTACT INFO CARD ===== */
+    .contact-info-card {
+        background: white;
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+    
+    .contact-info-card h2 {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #f0f0f0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    /* Info Items */
+    .info-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+        margin-bottom: 20px;
+        padding: 12px;
+        background: #f8f9fa;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+    
+    .info-item:hover {
+        transform: translateX(5px);
+        background: #f0f2f5;
+    }
+    
+    .info-icon {
+        width: 45px;
+        height: 45px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    
+    .info-icon i {
+        font-size: 1.2rem;
+        color: white;
+    }
+    
+    .info-content {
+        flex: 1;
+    }
+    
+    .info-content h3 {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 5px;
+    }
+    
+    .info-content p, .info-content a {
+        color: #666;
+        font-size: 0.85rem;
+        line-height: 1.5;
+        text-decoration: none;
+        margin: 0;
+        word-break: break-word;
+    }
+    
+    .info-content a:hover {
+        color: #667eea;
+    }
+    
+    /* Business Hours */
+    .business-hours {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 15px;
+        margin-top: 15px;
+    }
+    
+    .business-hours h3 {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .hour-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px dashed #e0e0e0;
+        font-size: 0.85rem;
+    }
+    
+    .hour-row:last-child {
+        border-bottom: none;
+    }
+    
+    .hour-day {
+        font-weight: 500;
+        color: #555;
+    }
+    
+    .hour-time {
+        color: #667eea;
+        font-weight: 500;
+    }
+    
+    /* ===== CONTACT FORM CARD ===== */
+    .contact-form-card {
+        background: white;
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+    
+    .contact-form-card h2 {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #f0f0f0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    /* Form Groups */
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #333;
+        font-size: 0.85rem;
+    }
+    
+    .form-group label span {
+        color: #dc3545;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        font-family: inherit;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+    }
+    
+    .form-group textarea {
+        resize: vertical;
+        min-height: 90px;
+    }
+    
+    /* Submit Button */
+    .submit-btn {
+        width: 100%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border: none;
+        padding: 12px;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    
+    .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(102,126,234,0.4);
+    }
+    
+    /* ===== MAP SECTION ===== */
+    .map-section {
+        margin-bottom: 40px;
+    }
+    
+    .map-section h2 {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 15px;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    
+    .map-container {
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .map-container iframe {
+        width: 100%;
+        height: 350px;
+        border: none;
+        display: block;
+    }
+    
+    /* ===== FAQ SECTION ===== */
+    .faq-section {
+        background: #f8f9fa;
+        border-radius: 30px;
+        padding: 30px;
+        margin-bottom: 40px;
+    }
+    
+    .faq-section h2 {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 25px;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    
+    .faq-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 15px;
+    }
+    
+    .faq-item {
+        background: white;
+        border-radius: 12px;
+        padding: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .faq-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    }
+    
+    .faq-question {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 600;
+        color: #333;
+        font-size: 0.9rem;
+        gap: 10px;
+    }
+    
+    .faq-question i {
+        color: #667eea;
+        transition: transform 0.3s;
+        flex-shrink: 0;
+    }
+    
+    .faq-item.active .faq-question i {
+        transform: rotate(180deg);
+    }
+    
+    .faq-answer {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        color: #666;
+        font-size: 0.85rem;
+        line-height: 1.6;
+        margin-top: 0;
+    }
+    
+    .faq-item.active .faq-answer {
+        max-height: 200px;
+        margin-top: 12px;
+    }
+    
+    /* ===== SOCIAL SECTION ===== */
+    .social-section {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    
+    .social-section h2 {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    
+    .social-links {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+    
+    .social-link {
+        width: 45px;
+        height: 45px;
+        background: #f0f0f0;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #667eea;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+    
+    .social-link:hover {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        transform: translateY(-5px);
+    }
+    
+    /* ===== ALERT MESSAGES ===== */
+    .alert {
+        padding: 12px 15px;
+        border-radius: 10px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.85rem;
+    }
+    
+    .alert-success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+    
+    .alert-error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+    
+    /* ===== RESPONSIVE DESIGN ===== */
+    
+    /* Tablet (768px - 991px) */
+    @media (max-width: 991px) {
+        .contact-grid {
+            gap: 25px;
+        }
+        
+        .map-container iframe {
+            height: 300px;
+        }
+        
+        .faq-grid {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+    }
+    
+    /* Mobile Landscape (576px - 767px) */
+    @media (max-width: 768px) {
+        .contact-container {
+            padding: 15px;
+        }
+        
+        .contact-hero {
+            padding: 40px 15px;
+            border-radius: 20px;
+        }
+        
+        .contact-hero h1 {
+            font-size: 1.8rem;
+        }
+        
+        .contact-hero p {
+            font-size: 0.9rem;
+        }
+        
+        .contact-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        
+        .contact-info-card, .contact-form-card {
+            padding: 20px;
+        }
+        
+        .info-item {
+            padding: 10px;
+            gap: 12px;
+        }
+        
+        .info-icon {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .info-icon i {
+            font-size: 1rem;
+        }
+        
+        .map-container iframe {
+            height: 250px;
+        }
+        
+        .faq-section {
+            padding: 20px;
+            border-radius: 20px;
+        }
+        
+        .faq-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .faq-item {
+            padding: 12px;
+        }
+        
+        .social-link {
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+        }
+    }
+    
+    /* Mobile Portrait (up to 575px) */
+    @media (max-width: 575px) {
+        .contact-hero h1 {
+            font-size: 1.5rem;
+        }
+        
+        .contact-hero p {
+            font-size: 0.85rem;
+        }
+        
+        .contact-info-card h2, 
+        .contact-form-card h2,
+        .map-section h2,
+        .faq-section h2,
+        .social-section h2 {
+            font-size: 1.1rem;
+        }
+        
+        .info-item {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .info-icon {
+            margin-bottom: 8px;
+        }
+        
+        .business-hours h3 {
+            justify-content: center;
+        }
+        
+        .hour-row {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 5px;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 8px 10px;
+            font-size: 0.85rem;
+        }
+        
+        .submit-btn {
+            padding: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .map-container iframe {
+            height: 200px;
+        }
+        
+        .faq-question {
+            font-size: 0.85rem;
+        }
+        
+        .faq-answer {
+            font-size: 0.8rem;
+        }
+        
+        .social-links {
+            gap: 12px;
+        }
+        
+        .social-link {
+            width: 38px;
+            height: 38px;
+            font-size: 0.9rem;
+        }
+    }
+    
+    /* Extra Small (up to 380px) */
+    @media (max-width: 380px) {
+        .contact-hero h1 {
+            font-size: 1.3rem;
+        }
+        
+        .contact-info-card h2, 
+        .contact-form-card h2 {
+            font-size: 1rem;
+        }
+        
+        .info-content h3 {
+            font-size: 0.85rem;
+        }
+        
+        .info-content p, 
+        .info-content a {
+            font-size: 0.75rem;
+        }
+        
+        .business-hours h3 {
+            font-size: 0.85rem;
+        }
+        
+        .hour-row {
+            font-size: 0.75rem;
+        }
+        
+        .faq-question {
+            font-size: 0.8rem;
+        }
+        
+        .social-link {
+            width: 35px;
+            height: 35px;
+            font-size: 0.85rem;
+        }
+    }
+    
+    /* Print Styles */
+    @media print {
+        .contact-hero, .map-container, .faq-section, .social-section, .submit-btn {
+            display: none;
+        }
+        
+        .contact-info-card, .contact-form-card {
+            box-shadow: none;
+            border: 1px solid #ddd;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="contact-container">
+    <!-- Hero Section -->
+    <div class="contact-hero">
+        <h1>Get in Touch</h1>
+        <p>Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
+    </div>
+    
+    <!-- Contact Grid -->
+    <div class="contact-grid">
+        <!-- Contact Info -->
+        <div class="contact-info-card">
+            <h2><i class="fas fa-address-card"></i> Contact Information</h2>
+            
+            <div class="info-item">
+                <div class="info-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div class="info-content">
+                    <h3>Our Location</h3>
+                    <p>Chomu, Jaipur, Rajasthan, India - 303702</p>
+                </div>
+            </div>
+            
+            <div class="info-item">
+                <div class="info-icon">
+                    <i class="fas fa-phone"></i>
+                </div>
+                <div class="info-content">
+                    <h3>Phone Number</h3>
+                    <p><a href="tel:+917014172393">+91 70141 72393</a></p>
+                    <p><a href="tel:+919413236331">+91 9413236331</a> (Support)</p>
+                </div>
+            </div>
+            
+            <div class="info-item">
+                <div class="info-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <div class="info-content">
+                    <h3>Email Address</h3>
+                    <p><a href="mailto:maheshkumaryadavjaipur@gmail.com">maheshkumaryadavjaipur@gmail.com</a></p>
+                    <p><a href="mailto:support@mgs.com">support@mgs.com</a></p>
+                </div>
+            </div>
+            
+            <div class="info-item">
+                <div class="info-icon">
+                    <i class="fab fa-whatsapp"></i>
+                </div>
+                <div class="info-content">
+                    <h3>WhatsApp</h3>
+                    <p><a href="https://wa.me/917014172393" target="_blank">+91 70141 72393</a></p>
+                </div>
+            </div>
+            
+            <!-- Business Hours -->
+            <div class="business-hours">
+                <h3><i class="far fa-clock"></i> Business Hours</h3>
+                <div class="hour-row">
+                    <span class="hour-day">Monday - Saturday</span>
+                    <span class="hour-time">9:00 AM - 9:00 PM</span>
+                </div>
+                <div class="hour-row">
+                    <span class="hour-day">Sunday</span>
+                    <span class="hour-time">10:00 AM - 6:00 PM</span>
+                </div>
+                <div class="hour-row">
+                    <span class="hour-day">Month Last Sunday</span>
+                    <span class="hour-time">Closed</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contact Form -->
+        <div class="contact-form-card">
+            <h2><i class="fas fa-paper-plane"></i> Send Us a Message</h2>
+            
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+            
+            <form method="POST" action="{% url 'contact_us' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Your Name <span>*</span></label>
+                    <input type="text" name="name" placeholder="Enter your full name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Email Address <span>*</span></label>
+                    <input type="email" name="email" placeholder="Enter your email address" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" name="phone" placeholder="Enter your phone number">
+                </div>
+                
+                <div class="form-group">
+                    <label>Subject <span>*</span></label>
+                    <select name="subject" required>
+                        <option value="">Select a subject</option>
+                        <option value="order">Order Inquiry</option>
+                        <option value="product">Product Information</option>
+                        <option value="return">Return/Exchange</option>
+                        <option value="payment">Payment Issue</option>
+                        <option value="feedback">Feedback/Suggestion</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Your Message <span>*</span></label>
+                    <textarea name="message" placeholder="Write your message here..." required></textarea>
+                </div>
+                
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-paper-plane"></i> Send Message
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    {% comment %} <!-- Map Section -->
+    <div class="map-section">
+        <h2><i class="fas fa-map"></i> Find Us Here</h2>
+        <div class="map-container">
+            <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3558.123456789!2d75.716880!3d26.951659!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x396c3e8b3e5c9b1%3A0x6b3f8f2e5b3f8f2e!2sChomu%2C%20Rajasthan!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin" 
+                allowfullscreen="" 
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                title="MGS Electronics Location">
+            </iframe>
+        </div>
+    </div> {% endcomment %}
+    
+    <!-- FAQ Section -->
+    <div class="faq-section">
+        <h2><i class="fas fa-question-circle"></i> Frequently Asked Questions</h2>
+        <div class="faq-grid">
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>How can I track my order?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    You can track your order by logging into your account and going to "My Orders". You'll also receive tracking updates via email and SMS.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>What is your return policy?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    We offer a 30-day return policy on all products. Items must be unused and in original packaging. Contact our support team to initiate a return.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>Do you offer warranty?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Yes, all products come with manufacturer warranty. The warranty period varies by product (usually 1-3 years). Warranty details are mentioned on each product page.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>What payment methods do you accept?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    We accept Credit/Debit Cards, UPI (Google Pay, PhonePe, Paytm), Net Banking, Mobile Wallets, and Cash on Delivery.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>How long does delivery take?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Standard delivery takes 5-7 business days. Express delivery (if available) takes 2-3 business days. You'll receive tracking details once shipped.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>Can I change or cancel my order?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Orders can be cancelled within 24 hours of placement. Once shipped, cancellations are not possible. Contact support immediately for changes.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Social Links -->
+    <div class="social-section">
+        <h2><i class="fas fa-share-alt"></i> Connect With Us</h2>
+        <div class="social-links">
+            <a href="https://www.facebook.com/" target="_blank" class="social-link"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://www.instagram.com/" target="_blank" class="social-link"><i class="fab fa-instagram"></i></a>
+            <a href="https://twitter.com/" target="_blank" class="social-link"><i class="fab fa-twitter"></i></a>
+            <a href="https://wa.me/917014172393" target="_blank" class="social-link"><i class="fab fa-whatsapp"></i></a>
+            <a href="mailto:maheshkumaryadavjaipur@gmail.com" target="_blank" class="social-link"><i class="fas fa-envelope"></i></a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // FAQ Accordion
+    document.querySelectorAll('.faq-item').forEach(item => {
+        item.addEventListener('click', () => {
+            item.classList.toggle('active');
+        });
+    });
+</script>
+{% endblock %}

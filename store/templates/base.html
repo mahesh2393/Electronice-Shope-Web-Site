@@ -1,0 +1,424 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>MGS | Premium Electronics</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        
+        <!-- Logo with Image -->
+        <a class="navbar-brand" href="/">
+            <img src="{% static 'images/M.png' %}" alt="MGS Logo" class="logo-img">
+            <span class="brand-text">MADHURAM GRAH SANGRAH</span>
+        </a>
+        
+        <!-- Mobile Toggle Button (for mobile menu) -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <!-- Navbar Links -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                
+                <!-- Customer Menu - Only for non-admin users -->
+                {% if not user.is_authenticated or not user.is_staff %}
+                <li class="nav-item">
+                    <a href="/" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'cart' %}" class="nav-link"><i class="fas fa-shopping-cart"></i> Cart</a>
+                </li>
+                {% endif %}
+                
+                {% if user.is_authenticated %}
+                <!-- Admin Name Display -->
+                {% if user.is_staff %}
+                <li class="nav-item">
+                    <span class="nav-link admin-name">
+                        <i class="fas fa-user-shield"></i> Admin: {{ user.username }}
+                    </span>
+                </li>
+                {% else %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                        <i class="fas fa-user"></i> {{ user.username }}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="fas fa-user-circle"></i> My Profile</a></li>
+                        <li><a class="dropdown-item" href="{% url 'my_orders' %}"><i class="fas fa-box"></i> My Orders</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                    </ul>
+                </li>
+                {% endif %}
+                {% else %}
+                <li class="nav-item"><a href="{% url 'login' %}" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a></li>
+                <li class="nav-item"><a href="{% url 'signup' %}" class="nav-link"><i class="fas fa-user-plus"></i> Signup</a></li>
+                {% endif %}
+                
+                <!-- ✅ MENU BUTTON - Only for Admin (Visible on ALL DEVICES) -->
+                {% if user.is_authenticated and user.is_staff %}
+                <li class="nav-item">
+                    <button class="menu-btn" id="menuBtn">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+<!-- Page Content -->
+<main>
+    {% block content %}
+    {% endblock %}
+</main>
+
+<!-- RIGHT SIDEBAR NAVIGATION - Only for Admin -->
+{% if user.is_authenticated and user.is_staff %}
+<div class="right-sidebar" id="rightSidebar">
+    <div class="right-sidebar-header">
+        <div>
+            <i class="fas fa-crown"></i>
+            <span>Admin Panel</span>
+        </div>
+        <button class="close-sidebar-btn" id="closeSidebarBtn">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    
+    <div class="right-sidebar-menu">
+        <a href="{% url 'admin_dashboard' %}" class="sidebar-nav-link">
+            <i class="fas fa-chart-line"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="{% url 'users' %}" class="sidebar-nav-link">
+            <i class="fas fa-users"></i>
+            <span>Users</span>
+        </a>
+        <a href="{% url 'orders' %}" class="sidebar-nav-link">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Orders</span>
+        </a>
+        <a href="{% url 'stock_list' %}" class="sidebar-nav-link">
+            <i class="fas fa-boxes"></i>
+            <span>Stock List</span>
+        </a>
+        <a href="{% url 'stock_movements' %}" class="sidebar-nav-link">
+            <i class="fas fa-history"></i>
+            <span>Stock Movements</span>
+        </a>
+        <a href="{% url 'add_product' %}" class="sidebar-nav-link">
+            <i class="fas fa-plus-circle"></i>
+            <span>Add Product</span>
+        </a>
+
+        <div class="sidebar-divider"></div>
+        
+        <!-- Logout Button in Sidebar -->
+        <a href="{% url 'logout' %}" class="sidebar-nav-link logout-link">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+        </a>
+    </div>
+</div>
+
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+{% endif %}
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 col-md-6 mb-4 mb-md-0">
+                <h5><i class="fas fa-store"></i> MGS Electronics</h5>
+                <p class="small">Luxury Tech Experience | Premium Electronics for Modern Living</p>
+                <div class="map-preview">
+                    <iframe src="https://www.google.com/maps?q=Chomu+Jaipur&output=embed" width="100%" height="180" style="border:0; border-radius: 12px;" allowfullscreen loading="lazy"></iframe>
+                </div>
+                <a href="https://maps.google.com/?q=Chomu+Jaipur" target="_blank" class="map-link"><i class="fas fa-location-dot"></i> View on Google Maps</a>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-4 mb-md-0">
+                <h5>Quick Links</h5>
+                <ul class="list-unstyled">
+                    <li><a href="/"><i class="fas fa-angle-right"></i> Home</a></li>
+                    <li><a href="{% url 'cart' %}"><i class="fas fa-angle-right"></i> Cart</a></li>
+                    <li><a href="{% url 'about_us' %}"><i class="fas fa-angle-right"></i> About Us</a></li>
+                    <li><a href="{% url 'contact_us' %}"><i class="fas fa-angle-right"></i> Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-4 col-md-12">
+                <h5>Contact Us</h5>
+                <ul class="list-unstyled contact-info">
+                    <li><i class="fas fa-phone"></i> <span>+91 7014172393</span></li>
+                    <li><i class="fas fa-envelope"></i> <span>maheshkumaryadavjaipur@gmail.com</span></li>
+                    <li><i class="fas fa-map-marker-alt"></i> <span>Chomu, Jaipur, India</span></li>
+                </ul>
+                <div class="working-hours mt-3">
+                    <h6><i class="far fa-clock"></i> Working Hours</h6>
+                    <p class="small mb-1">Monday - Sunday: 9:00 AM - 10:00 PM</p>
+                    <p class="small mb-0">Monthly last sunday : Closed</p>
+                </div>
+            </div>
+        </div>
+        <hr class="footer-hr">
+        <div class="text-center">
+            <p class="small mb-0">&copy; 2026 MGS Electronics | All Rights Reserved</p>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Right Sidebar Toggle Functionality
+    const sidebar = document.getElementById('rightSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const menuBtn = document.getElementById('menuBtn');
+    const closeBtn = document.getElementById('closeSidebarBtn');
+    
+    function openSidebar() {
+        if (sidebar) {
+            sidebar.classList.add('open');
+            overlay.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+    
+    function closeSidebar() {
+        if (sidebar) {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+    }
+    
+    if (menuBtn) {
+        menuBtn.addEventListener('click', openSidebar);
+    }
+    
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeSidebar);
+    }
+    
+    if (overlay) {
+        overlay.addEventListener('click', closeSidebar);
+    }
+    
+    // Close sidebar on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeSidebar();
+        }
+    });
+</script>
+
+<style>
+    /* Menu Button - Visible on ALL DEVICES for Admin */
+    .menu-btn {
+        background: rgba(255,255,255,0.2);
+        border: none;
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-left: 10px;
+    }
+    
+    .menu-btn:hover {
+        background: rgba(255,255,255,0.3);
+        transform: scale(1.05);
+    }
+    
+    /* Admin Name Display */
+    .admin-name {
+        background: rgba(255,215,0,0.2);
+        border-radius: 20px;
+        padding: 5px 15px !important;
+        margin: 0 10px;
+    }
+    
+    .admin-name i {
+        margin-right: 5px;
+        color: #ffd700;
+    }
+    
+    /* Right Sidebar */
+    .right-sidebar {
+        position: fixed;
+        top: 0;
+        right: -320px;
+        width: 300px;
+        height: 100vh;
+        background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+        color: white;
+        z-index: 1050;
+        transition: right 0.3s ease;
+        overflow-y: auto;
+        box-shadow: -2px 0 10px rgba(0,0,0,0.2);
+    }
+    
+    .right-sidebar.open {
+        right: 0;
+    }
+    
+    .right-sidebar-header {
+        padding: 20px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+    
+    .right-sidebar-header i {
+        color: #ffd700;
+        margin-right: 10px;
+    }
+    
+    .close-sidebar-btn {
+        background: rgba(255,255,255,0.1);
+        border: none;
+        color: white;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .close-sidebar-btn:hover {
+        background: #ffd700;
+        color: #1a1a2e;
+    }
+    
+    .right-sidebar-menu {
+        padding: 15px 0;
+    }
+    
+    .sidebar-nav-link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 20px;
+        color: #e0e0e0;
+        text-decoration: none;
+        transition: all 0.3s;
+        font-size: 0.95rem;
+    }
+    
+    .sidebar-nav-link i {
+        width: 24px;
+        font-size: 1.1rem;
+    }
+    
+    .sidebar-nav-link:hover {
+        background: rgba(255,215,0,0.1);
+        color: #ffd700;
+        padding-left: 25px;
+    }
+    
+    .sidebar-divider {
+        height: 1px;
+        background: rgba(255,255,255,0.1);
+        margin: 10px 0;
+    }
+    
+    .logout-link {
+        border-top: 1px solid rgba(255,255,255,0.1);
+        margin-top: 10px;
+        padding-top: 15px;
+        color: #ff6b6b;
+    }
+    
+    .logout-link:hover {
+        color: #ff4444;
+        background: rgba(255,107,107,0.1);
+    }
+    
+    /* Sidebar Overlay */
+    .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 1040;
+        display: none;
+    }
+    
+    .sidebar-overlay.show {
+        display: block;
+    }
+    
+    /* Scrollbar */
+    .right-sidebar::-webkit-scrollbar {
+        width: 5px;
+    }
+    
+    .right-sidebar::-webkit-scrollbar-track {
+        background: rgba(255,255,255,0.1);
+    }
+    
+    .right-sidebar::-webkit-scrollbar-thumb {
+        background: #ffd700;
+        border-radius: 5px;
+    }
+    
+    /* Responsive - Menu button stays visible on all devices */
+    @media (max-width: 768px) {
+        .menu-btn {
+            width: 35px;
+            height: 35px;
+        }
+        .right-sidebar {
+            width: 280px;
+            right: -300px;
+        }
+        .admin-name {
+            font-size: 0.85rem;
+            padding: 3px 10px !important;
+        }
+    }
+</style>
+
+{% block extra_js %}{% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="row">
+
+    <!-- LEFT SIDE: Brand List -->
+    <div class="col-md-3">
+        <h5 class="text-warning mb-3">Brands</h5>
+        <ul class="list-group">
+
+            <a href="{% url 'led_tv' %}" 
+               class="list-group-item bg-dark text-light border-secondary">
+               All Brands
+            </a>
+
+            {% for brand in brands %}
+            <a href="{% url 'brand_led_tv' brand.id %}" 
+               class="list-group-item bg-dark text-light border-secondary">
+               {{ brand.name }}
+            </a>
+            {% endfor %}
+
+        </ul>
+    </div>
+
+    <!-- RIGHT SIDE: Products -->
+    <div class="col-md-9">
+        <div class="row">
+            {% for product in products %}
+            <div class="col-md-4 mb-4">
+                <div class="card p-3 text-center">
+
+                    <img src="{{ product.image }}" 
+                         class="img-fluid mb-3"
+                         style="height:200px; object-fit:cover;">
+
+                    <h5 class="product-title">{{ product.name }}</h5>
+                    <p class="text-warning fw-bold">₹{{ product.price }}</p>
+
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-light">No products found.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

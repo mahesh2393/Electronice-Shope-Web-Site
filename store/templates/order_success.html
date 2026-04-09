@@ -1,0 +1,374 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/order_success.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+    /* Additional styles for ordered items */
+    .order-items-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 15px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #e0e0e0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .order-items-title i {
+        color: #667eea;
+    }
+    
+    .order-items-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .order-item-success {
+        display: flex;
+        gap: 20px;
+        padding: 15px;
+        background: #fafafa;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+    }
+    
+    .order-item-success:hover {
+        background: #f5f5f5;
+        transform: translateX(3px);
+    }
+    
+    .product-image-container {
+        width: 80px;
+        height: 80px;
+        flex-shrink: 0;
+        background: white;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #e0e0e0;
+        overflow: hidden;
+        padding: 5px;
+    }
+    
+    .product-image {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+    
+    .product-image-placeholder {
+        font-size: 1.5rem;
+        color: #ccc;
+    }
+    
+    .product-details-success {
+        flex: 1;
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+    
+    .product-info-success {
+        flex: 2;
+    }
+    
+    .product-name-success {
+        font-size: 1rem;
+        font-weight: 500;
+        color: #111;
+        margin-bottom: 8px;
+        text-decoration: none;
+    }
+    
+    .product-name-success:hover {
+        color: #c45500;
+        text-decoration: underline;
+    }
+    
+    .product-meta-success {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-top: 5px;
+    }
+    
+    .product-quantity-success {
+        font-size: 0.8rem;
+        color: #666;
+    }
+    
+    .product-price-success {
+        font-size: 0.8rem;
+        color: #666;
+    }
+    
+    .product-price-success span {
+        font-weight: 500;
+        color: #111;
+    }
+    
+    .product-total-success {
+        text-align: right;
+        min-width: 100px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    
+    .product-subtotal-success {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #B12704;
+    }
+    
+    .product-unit-price-success {
+        font-size: 0.7rem;
+        color: #666;
+        margin-top: 3px;
+    }
+    
+    @media (max-width: 768px) {
+        .order-item-success {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .product-details-success {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .product-total-success {
+            text-align: center;
+        }
+        
+        .product-meta-success {
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="order-success-wrapper">
+    <div class="container mt-5">
+        <div class="order-success-container">
+            <!-- Success Animation -->
+            <div class="success-animation-box">
+                <div class="checkmark-circle">
+                    <div class="background"></div>
+                    <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                        <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+                        <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                    </svg>
+                </div>
+                <h2 class="success-heading">Order Placed Successfully!</h2>
+                <p class="success-subheading">Thank you for shopping with us. Your order has been confirmed.</p>
+            </div>
+            
+            <!-- Order Details Card -->
+            <div class="order-details-card">
+                <div class="order-card-header">
+                    <h4 class="order-header-title">
+                        <i class="fas fa-receipt"></i>
+                        Order Summary
+                        <span class="order-badge">#{{ order.id }}</span>
+                    </h4>
+                </div>
+                <div class="order-card-body">
+                    <!-- Customer Information Grid -->
+                    <div class="info-grid-container">
+                        <div class="info-row">
+                            <div class="info-icon-box">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="info-details">
+                                <div class="info-label-text">Customer Name</div>
+                                <div class="info-value-text">{{ order.name }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="info-row">
+                            <div class="info-icon-box">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="info-details">
+                                <div class="info-label-text">Email Address</div>
+                                <div class="info-value-text">{{ order.email }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="info-row">
+                            <div class="info-icon-box">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="info-details">
+                                <div class="info-label-text">Phone Number</div>
+                                <div class="info-value-text">{{ order.phone }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="info-row">
+                            <div class="info-icon-box">
+                                <i class="fas fa-calendar"></i>
+                            </div>
+                            <div class="info-details">
+                                <div class="info-label-text">Order Date</div>
+                                <div class="info-value-text">{{ order.created_at|date:"d M Y, h:i A" }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="info-row">
+                            <div class="info-icon-box">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="info-details">
+                                <div class="info-label-text">Delivery Address</div>
+                                <div class="info-value-text">{{ order.address }}, {{ order.city }} - {{ order.pincode }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="info-row">
+                            <div class="info-icon-box">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <div class="info-details">
+                                <div class="info-label-text">Payment Method</div>
+                                <div class="info-value-text">
+                                    <span class="payment-method-badge payment-{{ order.payment_method }}">
+                                        {% if order.payment_method == 'cod' %}
+                                            <i class="fas fa-money-bill-wave"></i> Cash on Delivery
+                                        {% elif order.payment_method == 'card' %}
+                                            <i class="fas fa-credit-card"></i> Credit/Debit Card
+                                        {% elif order.payment_method == 'upi' %}
+                                            <i class="fab fa-google-pay"></i> UPI
+                                        {% elif order.payment_method == 'netbanking' %}
+                                            <i class="fas fa-university"></i> Net Banking
+                                        {% elif order.payment_method == 'wallet' %}
+                                            <i class="fas fa-wallet"></i> Mobile Wallet
+                                        {% else %}
+                                            {{ order.get_payment_method_display }}
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="info-row">
+                            <div class="info-icon-box">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="info-details">
+                                <div class="info-label-text">Payment Status</div>
+                                <div class="info-value-text">
+                                    <span class="payment-status-badge status-{{ order.payment_status }}">
+                                        {% if order.payment_status == 'completed' %}
+                                            <i class="fas fa-check-circle"></i> Paid
+                                        {% elif order.payment_status == 'pending' %}
+                                            <i class="fas fa-clock"></i> Pending
+                                        {% elif order.payment_status == 'failed' %}
+                                            <i class="fas fa-times-circle"></i> Failed
+                                        {% else %}
+                                            {{ order.get_payment_status_display }}
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- ✅ Ordered Items Section (Fixed - Same as My Orders) -->
+                    <div class="order-items-title">
+                        <i class="fas fa-shopping-bag"></i>
+                        Ordered Items
+                    </div>
+                    
+                    <div class="order-items-list">
+                        {% for item in order_items %}
+                        <div class="order-item-success">
+                            <!-- Product Image -->
+                            <div class="product-image-container">
+                                {% if item.product.image %}
+                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="product-image">
+                                {% else %}
+                                <div class="product-image-placeholder">
+                                    <i class="fas fa-box"></i>
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Product Details -->
+                            <div class="product-details-success">
+                                <div class="product-info-success">
+                                    <a href="{% url 'product_detail' item.product.id %}" class="product-name-success">
+                                        {{ item.product.name }}
+                                    </a>
+                                    <div class="product-meta-success">
+                                        <div class="product-quantity-success">
+                                            <i class="fas fa-cubes"></i> Quantity: {{ item.quantity }}
+                                        </div>
+                                        <div class="product-price-success">
+                                            <i class="fas fa-tag"></i> Unit Price: <span>₹{{ item.price|floatformat:2 }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="product-total-success">
+                                    <div class="product-subtotal-success">
+                                        ₹{{ item.subtotal|floatformat:2 }}
+                                    </div>
+                                    <div class="product-unit-price-success">
+                                        ₹{{ item.price|floatformat:2 }} × {{ item.quantity }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Delivery Information -->
+                    <div class="delivery-info-box">
+                        <div class="delivery-icon-box">
+                            <i class="fas fa-truck"></i>
+                        </div>
+                        <div class="delivery-text-content">
+                            <strong>Estimated Delivery:</strong> 5-7 business days
+                            <small>You will receive a tracking link once your order ships.</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="action-button-group">
+                        <a href="{% url 'home' %}" class="action-btn action-btn-primary">
+                            <i class="fas fa-home"></i>
+                            Continue Shopping
+                        </a>
+                        
+                        <a href="#" class="action-btn action-btn-outline" onclick="window.print()">
+                            <i class="fas fa-print"></i>
+                            Print Receipt
+                        </a>
+                        
+                        <a href="{% url 'my_orders' %}" class="action-btn action-btn-outline">
+                            <i class="fas fa-box"></i>
+                            View All Orders
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Thank You Message -->
+            <div class="thankyou-message-container">
+                <p>We hope you enjoy your purchase! For any queries, contact our support.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

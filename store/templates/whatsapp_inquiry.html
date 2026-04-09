@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="fab fa-whatsapp"></i> WhatsApp Order Inquiry</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{% url 'whatsapp_inquiry' %}">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label>Your Name *</label>
+                            <input type="text" name="name" class="form-control" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label>WhatsApp Number *</label>
+                            <input type="tel" name="phone" class="form-control" placeholder="+91 7014172393" required>
+                            <small class="text-muted">Include country code</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label>Email (Optional)</label>
+                            <input type="email" name="email" class="form-control">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label>Product Interested In</label>
+                            <select name="product_id" class="form-control">
+                                <option value="">Select a product (optional)</option>
+                                {% for product in products %}
+                                <option value="{{ product.id }}">{{ product.name }} - ₹{{ product.price }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label>Your Message *</label>
+                            <textarea name="message" class="form-control" rows="4" placeholder="Tell us what you need..." required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fab fa-whatsapp"></i> Send Inquiry on WhatsApp
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

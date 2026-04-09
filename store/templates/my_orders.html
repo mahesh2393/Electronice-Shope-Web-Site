@@ -1,0 +1,535 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+    /* ===== AMAZON STYLE ORDERS PAGE ===== */
+    .orders-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 30px 20px;
+        background: #f5f5f5;
+        min-height: 100vh;
+    }
+    
+    /* Header */
+    .orders-header {
+        margin-bottom: 30px;
+    }
+    
+    .orders-header h2 {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #111;
+        margin-bottom: 5px;
+    }
+    
+    .orders-header p {
+        color: #666;
+        font-size: 0.9rem;
+    }
+    
+    /* Order Card */
+    .order-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+        overflow: hidden;
+        transition: box-shadow 0.2s ease;
+    }
+    
+    .order-card:hover {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    
+    /* Order Header */
+    .order-header {
+        background: #f0f2f2;
+        padding: 12px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        border-bottom: 1px solid #ddd;
+    }
+    
+    .order-info {
+        display: flex;
+        gap: 30px;
+        flex-wrap: wrap;
+    }
+    
+    .order-info-item {
+        font-size: 0.85rem;
+    }
+    
+    .order-info-item strong {
+        color: #555;
+        font-weight: 500;
+    }
+    
+    .order-info-item span {
+        color: #111;
+    }
+    
+    .order-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    
+    .status-delivered {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .status-shipped {
+        background: #cce5ff;
+        color: #004085;
+    }
+    
+    .status-processing {
+        background: #fff3cd;
+        color: #856404;
+    }
+    
+    .status-pending {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    
+    .status-out_for_delivery {
+        background: #d1ecf1;
+        color: #0c5460;
+    }
+    
+    /* Order Body */
+    .order-body {
+        padding: 20px;
+    }
+    
+    /* Order Items List */
+    .order-items-list {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    /* Amazon Style Product Item */
+    .order-item {
+        display: flex;
+        gap: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .order-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+    
+    /* Product Image */
+    .product-image-container {
+        width: 120px;
+        height: 120px;
+        flex-shrink: 0;
+        background: #f8f9fa;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #e0e0e0;
+        overflow: hidden;
+    }
+    
+    .product-image {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        transition: transform 0.2s ease;
+    }
+    
+    .product-image:hover {
+        transform: scale(1.05);
+    }
+    
+    .product-image-placeholder {
+        font-size: 2rem;
+        color: #999;
+    }
+    
+    /* Product Details */
+    .product-details {
+        flex: 1;
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+    
+    .product-info {
+        flex: 2;
+    }
+    
+    .product-name {
+        font-size: 1rem;
+        font-weight: 500;
+        color: #111;
+        margin-bottom: 8px;
+        text-decoration: none;
+    }
+    
+    .product-name:hover {
+        color: #c45500;
+        text-decoration: underline;
+    }
+    
+    .product-quantity {
+        font-size: 0.85rem;
+        color: #666;
+        margin-bottom: 8px;
+    }
+    
+    .product-price {
+        font-size: 0.9rem;
+        color: #666;
+    }
+    
+    .product-price span {
+        font-weight: 500;
+        color: #111;
+    }
+    
+    /* Price Column */
+    .product-total {
+        text-align: right;
+        min-width: 120px;
+    }
+    
+    .product-subtotal {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #B12704;
+    }
+    
+    .product-unit-price {
+        font-size: 0.75rem;
+        color: #666;
+        margin-top: 5px;
+    }
+    
+    /* Order Footer */
+    .order-footer {
+        background: #fafafa;
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        border-top: 1px solid #e0e0e0;
+    }
+    
+    .order-total {
+        font-size: 1rem;
+    }
+    
+    .order-total strong {
+        font-size: 1.1rem;
+        color: #B12704;
+    }
+    
+    .tracking-info {
+        font-size: 0.85rem;
+        color: #666;
+    }
+    
+    .tracking-number {
+        font-family: monospace;
+        background: #f0f0f0;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 12px;
+    }
+    
+    .btn-track {
+        background: #ffd814;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #111;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s;
+    }
+    
+    .btn-track:hover {
+        background: #f7ca00;
+        text-decoration: none;
+        color: #111;
+    }
+    
+    .btn-buy-again {
+        background: #ffd814;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #111;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s;
+    }
+    
+    .btn-buy-again:hover {
+        background: #f7ca00;
+    }
+    
+    /* Empty Orders */
+    .empty-orders {
+        background: white;
+        border-radius: 8px;
+        padding: 60px 20px;
+        text-align: center;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .empty-icon {
+        font-size: 4rem;
+        color: #ccc;
+        margin-bottom: 20px;
+    }
+    
+    .empty-orders h3 {
+        font-size: 1.5rem;
+        color: #111;
+        margin-bottom: 10px;
+    }
+    
+    .empty-orders p {
+        color: #666;
+        margin-bottom: 25px;
+    }
+    
+    .shop-now-btn {
+        background: #ffd814;
+        color: #111;
+        padding: 10px 30px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        display: inline-block;
+        transition: all 0.2s;
+    }
+    
+    .shop-now-btn:hover {
+        background: #f7ca00;
+        color: #111;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .orders-container {
+            padding: 15px;
+        }
+        
+        .order-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .order-info {
+            gap: 15px;
+        }
+        
+        .order-item {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .product-image-container {
+            width: 150px;
+            height: 150px;
+        }
+        
+        .product-details {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .product-total {
+            text-align: center;
+        }
+        
+        .order-footer {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .action-buttons {
+            justify-content: center;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .order-info {
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .product-image-container {
+            width: 120px;
+            height: 120px;
+        }
+        
+        .btn-track, .btn-buy-again {
+            padding: 6px 15px;
+            font-size: 0.75rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="orders-container">
+    <div class="orders-header">
+        <h2><i class="fas fa-box"></i> My Orders</h2>
+        <p>View and track all your orders</p>
+    </div>
+    
+    {% if orders %}
+        {% for order in orders %}
+        <div class="order-card">
+            <!-- Order Header -->
+            <div class="order-header">
+                <div class="order-info">
+                    <div class="order-info-item">
+                        <strong>ORDER PLACED</strong><br>
+                        <span>{{ order.created_at|date:"d M Y" }}</span>
+                    </div>
+                    <div class="order-info-item">
+                        <strong>TOTAL</strong><br>
+                        <span>₹{{ order.total_amount|floatformat:2 }}</span>
+                    </div>
+                    <div class="order-info-item">
+                        <strong>ORDER ID</strong><br>
+                        <span>#{{ order.id }}</span>
+                    </div>
+                    <div class="order-info-item">
+                        <strong>TRACKING</strong><br>
+                        <span class="tracking-number">{{ order.tracking_number|default:"Not assigned" }}</span>
+                    </div>
+                </div>
+                <div>
+                    <span class="order-status status-{{ order.status }}">
+                        <i class="fas {% if order.status == 'delivered' %}fa-check-circle{% elif order.status == 'shipped' %}fa-truck{% elif order.status == 'processing' %}fa-cog{% elif order.status == 'pending' %}fa-clock{% else %}fa-circle{% endif %}"></i>
+                        {{ order.get_status_display }}
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Order Body -->
+            <div class="order-body">
+                <div class="order-items-list">
+                    {% for item in order.items.all %}
+                    <div class="order-item">
+                        <!-- Product Image -->
+                        <div class="product-image-container">
+                            {% if item.product.image %}
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="product-image">
+                            {% else %}
+                            <div class="product-image-placeholder">
+                                <i class="fas fa-box"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Product Details -->
+                        <div class="product-details">
+                            <div class="product-info">
+                                <a href="{% url 'product_detail' item.product.id %}" class="product-name">
+                                    {{ item.product.name }}
+                                </a>
+                                <div class="product-quantity">
+                                    Quantity: {{ item.quantity }}
+                                </div>
+                                <div class="product-price">
+                                    Unit Price: <span>₹{{ item.price|floatformat:2 }}</span>
+                                </div>
+                            </div>
+                            <div class="product-total">
+                                <div class="product-subtotal">
+                                    ₹{{ item.subtotal|floatformat:2 }}
+                                </div>
+                                <div class="product-unit-price">
+                                    ₹{{ item.price|floatformat:2 }} × {{ item.quantity }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Order Footer -->
+            <div class="order-footer">
+                <div class="order-total">
+                    <strong>Order Total:</strong> ₹{{ order.total_amount|floatformat:2 }}
+                </div>
+                <div class="tracking-info">
+                    <i class="fas fa-truck"></i>
+                    {% if order.estimated_delivery %}
+                        Estimated Delivery: {{ order.estimated_delivery|date:"d M Y" }}
+                    {% else %}
+                        Tracking updates coming soon
+                    {% endif %}
+                </div>
+                <div class="action-buttons">
+                    <a href="{% url 'track_order' order.id %}" class="btn-track">
+                        <i class="fas fa-map-marker-alt"></i> Track Package
+                    </a>
+                    {% if order.status == 'delivered' %}
+                    <a href="{% url 'product_detail' order.items.first.product.id %}" class="btn-buy-again">
+                        <i class="fas fa-redo"></i> Buy Again
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-orders">
+            <div class="empty-icon">
+                <i class="fas fa-shopping-bag"></i>
+            </div>
+            <h3>No Orders Yet</h3>
+            <p>You haven't placed any orders yet.</p>
+            <a href="{% url 'home' %}" class="shop-now-btn">
+                <i class="fas fa-shopping-cart"></i> Start Shopping
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

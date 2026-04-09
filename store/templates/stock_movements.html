@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2><i class="fas fa-history"></i> Stock Movements</h2>
+    
+    <form method="GET" class="row g-3 mb-4">
+        <div class="col-md-4">
+            <input type="text" name="search" class="form-control" placeholder="Search product..." value="{{ search }}">
+        </div>
+        <div class="col-md-3">
+            <select name="type" class="form-control">
+                <option value="">All Types</option>
+                <option value="purchase" {% if type_filter == 'purchase' %}selected{% endif %}>Purchase</option>
+                <option value="sale" {% if type_filter == 'sale' %}selected{% endif %}>Sale</option>
+                <option value="return" {% if type_filter == 'return' %}selected{% endif %}>Return</option>
+                <option value="adjustment" {% if type_filter == 'adjustment' %}selected{% endif %}>Adjustment</option>
+                <option value="damage" {% if type_filter == 'damage' %}selected{% endif %}>Damage</option>
+                <option value="restock" {% if type_filter == 'restock' %}selected{% endif %}>Restock</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="date" class="form-control">
+                <option value="">All Time</option>
+                <option value="today" {% if date_filter == 'today' %}selected{% endif %}>Today</option>
+                <option value="week" {% if date_filter == 'week' %}selected{% endif %}>Last 7 Days</option>
+                <option value="month" {% if date_filter == 'month' %}selected{% endif %}>Last 30 Days</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Filter</button>
+        </div>
+    </form>
+    
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Product</th>
+                    <th>Type</th>
+                    <th>Quantity</th>
+                    <th>Notes</th>
+                    <th>By</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in movements %}
+                <tr>
+                    <td>{{ m.created_at|date:"d M H:i" }}</td>
+                    <td>
+                        <strong>{{ m.product.name }}</strong><br>
+                        <small>{{ m.product.sku|default:"" }}</small>
+                    </td>
+                    <td>
+                        <span class="badge bg-info">{{ m.get_movement_type_display }}</span>
+                    </td>
+                    <td class="{% if m.movement_type in 'purchase,return,restock' %}text-success{% else %}text-danger{% endif %}">
+                        {{ m.quantity }}
+                    </td>
+                    <td>{{ m.notes|default:"-" }}</td>
+                    <td>{{ m.created_by.username|default:"System" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">No movements found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    {% if movements.has_other_pages %}
+    <nav>
+        <ul class="pagination justify-content-center">
+            {% if movements.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1{% if search %}&search={{ search }}{% endif %}{% if type_filter %}&type={{ type_filter }}{% endif %}{% if date_filter %}&date={{ date_filter }}{% endif %}">&laquo; First</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ movements.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% if type_filter %}&type={{ type_filter }}{% endif %}{% if date_filter %}&date={{ date_filter }}{% endif %}">Previous</a>
+                </li>
+            {% endif %}
+            
+            <li class="page-item active">
+                <span class="page-link">Page {{ movements.number }} of {{ movements.paginator.num_pages }}</span>
+            </li>
+            
+            {% if movements.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ movements.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% if type_filter %}&type={{ type_filter }}{% endif %}{% if date_filter %}&date={{ date_filter }}{% endif %}">Next</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ movements.paginator.num_pages }}{% if search %}&search={{ search }}{% endif %}{% if type_filter %}&type={{ type_filter }}{% endif %}{% if date_filter %}&date={{ date_filter }}{% endif %}">Last &raquo;</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

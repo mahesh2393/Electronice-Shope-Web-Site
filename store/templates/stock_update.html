@@ -1,0 +1,414 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    /* Responsive Styles */
+    .stock-update-container {
+        padding: 20px;
+        background: #f8f9fa;
+        min-height: 100vh;
+    }
+    
+    .product-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    }
+    
+    .product-image-wrapper {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 15px;
+        text-align: center;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .product-image {
+        max-width: 100%;
+        max-height: 150px;
+        object-fit: contain;
+        transition: transform 0.3s ease;
+    }
+    
+    .product-image:hover {
+        transform: scale(1.05);
+    }
+    
+    .stock-badge {
+        font-size: 2rem;
+        font-weight: 700;
+    }
+    
+    .stock-badge.danger { color: #dc3545; }
+    .stock-badge.warning { color: #ffc107; }
+    .stock-badge.success { color: #28a745; }
+    
+    /* Form Styles */
+    .form-control-lg, .form-select-lg {
+        padding: 12px 15px;
+        font-size: 1rem;
+    }
+    
+    /* Responsive Breakpoints */
+    @media (max-width: 768px) {
+        .stock-update-container {
+            padding: 10px;
+        }
+        
+        .product-card .card-body {
+            padding: 20px;
+        }
+        
+        .product-image-wrapper {
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+        
+        .product-image {
+            max-height: 120px;
+        }
+        
+        .stock-badge {
+            font-size: 1.5rem;
+        }
+        
+        .form-control-lg, .form-select-lg {
+            padding: 10px 12px;
+            font-size: 0.95rem;
+        }
+        
+        .btn-lg {
+            padding: 10px 16px;
+            font-size: 0.95rem;
+        }
+        
+        .d-flex.gap-2 {
+            flex-direction: column;
+            gap: 10px !important;
+        }
+        
+        .d-flex.gap-2 .btn {
+            width: 100%;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .stock-update-container {
+            padding: 5px;
+        }
+        
+        .product-card .card-body {
+            padding: 15px;
+        }
+        
+        .product-info h3 {
+            font-size: 1.2rem;
+            text-align: center;
+        }
+        
+        .product-info .text-muted {
+            text-align: center;
+            display: block;
+        }
+        
+        .stock-stats {
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .stock-stat-item {
+            width: 100%;
+        }
+        
+        .stock-badge {
+            font-size: 1.2rem;
+        }
+        
+        .form-label {
+            font-size: 0.9rem;
+        }
+        
+        .form-control-lg, .form-select-lg {
+            padding: 8px 10px;
+            font-size: 0.9rem;
+        }
+        
+        .btn-lg {
+            padding: 8px 12px;
+            font-size: 0.9rem;
+        }
+        
+        textarea.form-control {
+            font-size: 0.9rem;
+        }
+    }
+    
+    @media (max-width: 380px) {
+        .product-info h3 {
+            font-size: 1rem;
+        }
+        
+        .stock-badge {
+            font-size: 1rem;
+        }
+        
+        .stock-stat-item small {
+            font-size: 0.7rem;
+        }
+        
+        .form-label {
+            font-size: 0.8rem;
+        }
+        
+        option {
+            font-size: 0.8rem;
+        }
+    }
+    
+    /* Animation */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .product-card {
+        animation: fadeIn 0.4s ease;
+    }
+    
+    /* Loading State */
+    .btn-loading {
+        position: relative;
+        pointer-events: none;
+        opacity: 0.7;
+    }
+    
+    .btn-loading::after {
+        content: '';
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        top: 50%;
+        right: 15px;
+        margin-top: -9px;
+        border: 2px solid white;
+        border-top-color: transparent;
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    /* Tooltip */
+    .tooltip-custom {
+        position: relative;
+        display: inline-block;
+        cursor: help;
+    }
+    
+    .tooltip-custom .tooltip-text {
+        visibility: hidden;
+        background-color: #333;
+        color: white;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 10px;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        transform: translateX(-50%);
+        white-space: nowrap;
+        font-size: 0.75rem;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+    
+    .tooltip-custom:hover .tooltip-text {
+        visibility: visible;
+        opacity: 1;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="stock-update-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10 col-12">
+                <div class="product-card card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">
+                            <i class="fas fa-edit me-2"></i> Update Stock
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- Product Info -->
+                        <div class="row mb-4">
+                            <div class="col-md-4 col-sm-12 mb-3 mb-md-0">
+                                <div class="product-image-wrapper">
+                                    {% if product.image %}
+                                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                                    {% else %}
+                                    <div class="bg-light rounded p-4 text-center">
+                                        <i class="fas fa-box fa-3x text-muted"></i>
+                                        <p class="text-muted small mt-2 mb-0">No Image</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-8 col-sm-12">
+                                <div class="product-info">
+                                    <h3 class="mb-2">{{ product.name }}</h3>
+                                    <p class="text-muted mb-3">
+                                        <i class="fas fa-barcode me-1"></i> SKU: {{ product.sku|default:"Not set" }}
+                                    </p>
+                                    <div class="row g-3 stock-stats">
+                                        <div class="col-6 stock-stat-item">
+                                            <div class="bg-light p-3 rounded text-center">
+                                                <small class="text-muted d-block mb-1">Current Stock</small>
+                                                <h2 class="stock-badge mb-0 
+                                                    {% if product.stock <= 0 %}danger
+                                                    {% elif product.stock <= product.low_stock_threshold %}warning
+                                                    {% else %}success{% endif %}">
+                                                    {{ product.stock }}
+                                                </h2>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 stock-stat-item">
+                                            <div class="bg-light p-3 rounded text-center">
+                                                <small class="text-muted d-block mb-1">
+                                                    Low Stock Threshold
+                                                    <span class="tooltip-custom">
+                                                        <i class="fas fa-question-circle text-muted"></i>
+                                                        <span class="tooltip-text">Alert when stock falls below this number</span>
+                                                    </span>
+                                                </small>
+                                                <h2 class="stock-badge mb-0 text-warning">
+                                                    {{ product.low_stock_threshold }}
+                                                </h2>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <!-- Stock Update Form -->
+                        <form method="POST" action="{% url 'stock_update' product.id %}" id="stockUpdateForm">
+                            {% csrf_token %}
+                            
+                            <div class="row g-3">
+                                <div class="col-md-6 col-12">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold">
+                                            <i class="fas fa-sort-amount-up me-1"></i> Quantity
+                                        </label>
+                                        <input type="number" 
+                                               name="quantity" 
+                                               class="form-control form-control-lg" 
+                                               required 
+                                               min="1" 
+                                               placeholder="Enter quantity"
+                                               value="{{ request.POST.quantity|default:'' }}">
+                                        <small class="text-muted">Enter positive number to add/remove stock</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold">
+                                            <i class="fas fa-tag me-1"></i> Movement Type
+                                        </label>
+                                        <select name="movement_type" class="form-select form-select-lg" required>
+                                            <option value="purchase">📦 Purchase (Add Stock)</option>
+                                            <option value="restock">🔄 Restock (Add Stock)</option>
+                                            <option value="return">↩️ Return (Add Stock)</option>
+                                            <option value="adjustment">⚙️ Adjustment (Manual Update)</option>
+                                            <option value="damage">⚠️ Damage (Remove Stock)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="fas fa-pen me-1"></i> Notes (Optional)
+                                </label>
+                                <textarea name="notes" 
+                                          class="form-control" 
+                                          rows="2" 
+                                          placeholder="Add any notes about this stock update...">{{ request.POST.notes|default:'' }}</textarea>
+                            </div>
+                            
+                            <div class="d-flex gap-2 mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg flex-grow-1" id="submitBtn">
+                                    <i class="fas fa-save me-2"></i> Update Stock
+                                </button>
+                                <a href="{% url 'stock_list' %}" class="btn btn-secondary btn-lg">
+                                    <i class="fas fa-arrow-left me-2"></i> Cancel
+                                </a>
+                            </div>
+                        </form>
+                        
+                        <!-- Stock History Link -->
+                        <div class="mt-4 text-center">
+                            <a href="{% url 'stock_movements' %}?product={{ product.id }}" class="text-muted small">
+                                <i class="fas fa-history me-1"></i> View stock history for this product
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Form submit loading state
+    document.getElementById('stockUpdateForm').addEventListener('submit', function(e) {
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.classList.add('btn-loading');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Updating Stock...';
+        submitBtn.disabled = true;
+    });
+    
+    // Quantity input validation
+    const quantityInput = document.querySelector('input[name="quantity"]');
+    if (quantityInput) {
+        quantityInput.addEventListener('change', function() {
+            if (this.value < 1) {
+                this.value = 1;
+                alert('Quantity must be at least 1');
+            }
+        });
+    }
+    
+    // Movement type change preview
+    const movementSelect = document.querySelector('select[name="movement_type"]');
+    if (movementSelect) {
+        movementSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const type = selectedOption.value;
+            const isAddStock = ['purchase', 'restock', 'return'].includes(type);
+            const isRemoveStock = ['damage'].includes(type);
+            
+            // You can add visual feedback here if needed
+            if (isAddStock) {
+                console.log('This will ADD stock');
+            } else if (isRemoveStock) {
+                console.log('This will REMOVE stock');
+            } else {
+                console.log('Manual adjustment');
+            }
+        });
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2><i class="fas fa-boxes"></i> Stock List</h2>
+    
+    <form method="GET" class="row g-3 mb-4">
+        <div class="col-md-4">
+            <input type="text" name="search" class="form-control" placeholder="Search..." value="{{ search }}">
+        </div>
+        <div class="col-md-3">
+            <select name="status" class="form-control">
+                <option value="">All Status</option>
+                <option value="in_stock" {% if status_filter == 'in_stock' %}selected{% endif %}>In Stock</option>
+                <option value="low_stock" {% if status_filter == 'low_stock' %}selected{% endif %}>Low Stock</option>
+                <option value="out_of_stock" {% if status_filter == 'out_of_stock' %}selected{% endif %}>Out of Stock</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Filter</button>
+        </div>
+    </form>
+    
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr><th>Image</th><th>Product</th><th>SKU</th><th>Price</th><th>Stock</th><th>Status</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+                {% for p in products %}
+                <tr>
+                    <td>{% if p.image %}<img src="{{ p.image.url }}" width="50">{% else %}<i class="fas fa-box"></i>{% endif %}</td>
+                    <td>{{ p.name }}</td>
+                    <td>{{ p.sku|default:"-" }}</td>
+                    <td>₹{{ p.price }}</td>
+                    <td><strong>{{ p.stock }}</strong></td>
+                    <td>
+                        {% if p.stock <= 0 %}
+                        <span class="badge bg-danger">Out of Stock</span>
+                        {% elif p.stock <= p.low_stock_threshold %}
+                        <span class="badge bg-warning">Low Stock</span>
+                        {% else %}
+                        <span class="badge bg-success">In Stock</span>
+                        {% endif %}
+                    </td>
+                    <td><a href="{% url 'stock_update' p.id %}" class="btn btn-sm btn-primary">Update</a></td>
+                 </tr>
+                {% empty %}
+                <tr><td colspan="7" class="text-center">No products found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    {% if products.has_other_pages %}
+    <nav><ul class="pagination">
+        {% if products.has_previous %}<li class="page-item"><a class="page-link" href="?page=1">&laquo;</a></li>{% endif %}
+        <li class="page-item active"><span class="page-link">{{ products.number }}/{{ products.paginator.num_pages }}</span></li>
+        {% if products.has_next %}<li class="page-item"><a class="page-link" href="?page={{ products.next_page_number }}">&raquo;</a></li>{% endif %}
+    </ul></nav>
+    {% endif %}
+</div>
+{% endblock %}

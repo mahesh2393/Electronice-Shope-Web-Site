@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-search"></i> Track Your Order</h4>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label>Tracking Number or Tracking ID</label>
+                            <input type="text" name="tracking_number" class="form-control" 
+                                   placeholder="Enter tracking number (e.g., MGS20250325A1B2C3) or Tracking ID (e.g., 123456AB)" required>
+                            <small class="text-muted">Enter the tracking number or short ID from your order confirmation</small>
+                        </div>
+                        <div class="mb-3">
+                            <label>Email Address</label>
+                            <input type="email" name="email" class="form-control" 
+                                   placeholder="Email used for order" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-map-marker-alt"></i> Track Order
+                        </button>
+                    </form>
+                    
+                    <div class="mt-3 text-center">
+                        <p class="text-muted">Don't have a tracking number? <a href="{% url 'login' %}">Login to your account</a> to view all orders.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

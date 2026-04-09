@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="text-center">
+        <div class="mb-4">
+            <i class="fas fa-times-circle text-danger" style="font-size: 5rem;"></i>
+        </div>
+        <h2 class="text-danger">Payment Cancelled</h2>
+        <p class="lead">Your payment was cancelled. No charges were made.</p>
+        <p>You can try again or choose a different payment method.</p>
+        
+        <div class="mt-4">
+            <a href="{% url 'cart' %}" class="btn btn-primary">
+                <i class="fas fa-shopping-cart"></i> Return to Cart
+            </a>
+            <a href="{% url 'home' %}" class="btn btn-secondary">
+                <i class="fas fa-home"></i> Continue Shopping
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

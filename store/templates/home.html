@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section with Search -->
+<section class="hero-section">
+    <div class="container">
+        <h1 class="hero-title">MADHURAM GRAH SANGRAH</h1>
+        <p class="hero-subtitle">Discover the finest collection for your home</p>
+        
+        <!-- Search Form -->
+        <form class="search-box" method="GET" action="{% url 'home' %}">
+            <input type="text" name="q" placeholder="Search products..." value="{{ request.GET.q }}">
+            <button type="submit"><i class="fas fa-search"></i> Search</button>
+        </form>
+    </div>
+</section>
+
+<!-- categories-section in home.html -->
+<section class="categories-section">
+    <div class="container">
+        <h2 class="section-title">Shop by Category</h2>
+        <div class="categories-grid">
+            <!-- Electronics -->
+            <a href="#" class="category-card electronics">
+                <div class="category-icon">
+                </div>
+                <h3>Electronics</h3>
+                <p>Home Appliances</p>
+            </a>
+            
+            <!-- Fashion -->
+            <a href="#" class="category-card fashion">
+                <div class="category-icon">
+                </div>
+                <h3>Air Conditioner </h3>
+                <p>Cooling Product</p>
+            </a>
+            
+            <!-- Furniture -->
+            <a href="#" class="category-card furniture">
+                <div class="category-icon">
+                </div>
+                <h3>Furniture</h3>
+                <p>Home & Office</p>
+            </a>
+            
+            <!-- Appliances -->
+            <a href="#" class="category-card appliances">
+                <div class="category-icon">
+                </div>
+                <h3>Appliances</h3>
+                <p>Kitchen & Home</p>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Products Section -->
+<section class="products-section">
+    <div class="container">
+        <h2 class="section-title">Featured Products</h2>
+        
+        {% if products %}
+        <div class="products-grid">
+            {% for product in products %}
+            <div class="product-card">
+                <!-- Product Badge (if any) -->
+                {% if forloop.first %}
+                <div class="product-badge">New</div>
+                {% endif %}
+                
+                <!-- Product Image -->
+                <div class="product-image">
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                    {% else %}
+                    <div class="no-image">
+                        <i class="fas fa-box-open"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Product Info -->
+                <div class="product-info">
+                    <h3 class="product-name">{{ product.name }}</h3>
+                    <p class="product-category">{{ product.category.name|default:"General" }}</p>
+                    <div class="product-price">₹{{ product.price|floatformat:2 }}</div>
+                    
+                    <!-- Product Actions -->
+                    <div class="product-actions">
+                        <a href="{% url 'product_detail' product.id %}" class="btn-view">
+                            <i class="fas fa-eye"></i> View Details
+                        </a>
+                        <form method="POST" action="{% url 'add_to_cart' product.id %}" class="add-to-cart-form">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-cart">
+                                <i class="fas fa-shopping-cart"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-products">
+            <i class="fas fa-box-open"></i>
+            <h3>No products found</h3>
+            <p>Try searching with different keywords</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="container">
+        <div class="features-grid">
+            <div class="feature-card">
+                <i class="fas fa-truck"></i>
+                <h4>Gift</h4>
+                <p>Product Gift</p>
+            </div>
+            
+            <div class="feature-card">
+                <i class="fas fa-undo"></i>
+                <h4>Warrinty of Product</h4>
+                <p>Warrintypolicy</p>
+            </div>
+            
+            <div class="feature-card">
+                <i class="fas fa-lock"></i>
+                <h4>Secure Payment</h4>
+                <p>100% secure transactions</p>
+            </div>
+            
+            <div class="feature-card">
+                <i class="fas fa-headset"></i>
+                <h4>24/7 Support</h4>
+                <p>Dedicated customer support</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter Section -->
+<section class="newsletter-section">
+    <div class="container">
+        <div class="newsletter-content">
+            <h3>Subscribe to our Newsletter</h3>
+            <p>Get the latest updates on new products and upcoming sales</p>
+            <form class="newsletter-form">
+                <input type="email" placeholder="Enter your email" required>
+                <button type="submit">Subscribe</button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

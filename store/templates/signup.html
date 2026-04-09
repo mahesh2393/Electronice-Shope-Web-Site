@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <div class="signup-box">
+        <h2>Create Account</h2>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="{% if message.tags == 'error' %}error-message{% else %}success-message{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <label>Username</label>
+            <input type="text" name="username" placeholder="Choose a username" required>
+
+            <label>Email</label>
+            <input type="email" name="email" placeholder="Enter your email" required>
+
+            <label>Password</label>
+            <input type="password" name="password1" placeholder="Create password" required>
+
+            <label>Confirm Password</label>
+            <input type="password" name="password2" placeholder="Confirm password" required>
+
+            <button type="submit">Create Account</button>
+        </form>
+
+        <p>
+            Already have account? <a href="{% url 'login' %}">Login</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

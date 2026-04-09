@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="text-center">
+        <div class="mb-4">
+            <i class="fas fa-check-circle text-success" style="font-size: 5rem;"></i>
+        </div>
+        <h2 class="text-success">Payment Successful!</h2>
+        <p class="lead">Your payment has been processed successfully.</p>
+        <p>You will be redirected to your order summary shortly.</p>
+        
+        <div class="mt-4">
+            <a href="{% url 'home' %}" class="btn btn-primary">
+                <i class="fas fa-home"></i> Go to Home
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Redirect to home after 3 seconds
+    setTimeout(function() {
+        window.location.href = "{% url 'home' %}";
+    }, 3000);
+</script>
+{% endblock %}

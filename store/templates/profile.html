@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-user"></i> Profile</h4>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-user-circle fa-5x text-primary"></i>
+                    </div>
+                    <h5>{{ user.get_full_name|default:user.username }}</h5>
+                    <p class="text-muted">{{ user.email }}</p>
+                    <p><i class="fas fa-phone"></i> {{ profile.phone|default:"Not added" }}</p>
+                    <hr>
+                    <div class="row">
+                        <div class="col-6">
+                            <h4>{{ total_orders }}</h4>
+                            <small>Orders</small>
+                        </div>
+                        <div class="col-6">
+                            <h4>₹{{ total_spent|floatformat:0 }}</h4>
+                            <small>Spent</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="fas fa-edit"></i> Edit Profile</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{% url 'update_profile' %}">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label>First Name</label>
+                                <input type="text" name="first_name" class="form-control" value="{{ user.first_name }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label>Last Name</label>
+                                <input type="text" name="last_name" class="form-control" value="{{ user.last_name }}">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label>Email</label>
+                            <input type="email" name="email" class="form-control" value="{{ user.email }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label>Phone</label>
+                            <input type="text" name="phone" class="form-control" value="{{ profile.phone|default:'' }}">
+                        </div>
+                        <div class="mb-3">
+                            <label>Address</label>
+                            <textarea name="address" class="form-control" rows="3">{{ profile.address|default:'' }}</textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label>City</label>
+                                <input type="text" name="city" class="form-control" value="{{ profile.city|default:'' }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label>Pincode</label>
+                                <input type="text" name="pincode" class="form-control" value="{{ profile.pincode|default:'' }}">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0"><i class="fas fa-key"></i> Change Password</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{% url 'change_password' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label>Current Password</label>
+                            <input type="password" name="current_password" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label>New Password</label>
+                            <input type="password" name="new_password" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label>Confirm New Password</label>
+                            <input type="password" name="confirm_password" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-warning w-100">
+                            <i class="fas fa-key"></i> Change Password
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

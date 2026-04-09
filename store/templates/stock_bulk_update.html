@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2><i class="fas fa-layer-group"></i> Bulk Stock Update</h2>
+    
+    <form method="POST">
+        {% csrf_token %}
+        <div class="card"><div class="card-header"><h4>Low Stock Products</h4></div><div class="card-body">
+            <table class="table"><thead><tr><th>Select</th><th>Product</th><th>Current Stock</th><th>Add Quantity</th></tr></thead>
+            <tbody>{% for p in products %}<tr><td><input type="checkbox" name="product_ids" value="{{ p.id }}"></td><td>{{ p.name }}</td><td><span class="badge bg-warning">{{ p.stock }}</span></td><td><input type="number" name="quantities" class="form-control" style="width:100px" value="10"></td></tr>{% empty %}<tr><td colspan="4">No low stock products found.</td></tr>{% endfor %}</tbody>
+            </table>
+        </div><div class="card-footer"><button type="submit" class="btn btn-success w-100">Update Selected Products</button></div></div>
+    </form>
+</div>
+{% endblock %}
